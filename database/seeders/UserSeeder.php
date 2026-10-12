@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Perizinan;
+use App\Models\Santri;
 use App\Models\Satpam;
+use App\Models\User;
 use App\Models\WaliSantri;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -17,7 +19,7 @@ class UserSeeder extends Seeder
             'username' => 'admin_pondok',
             'name' => 'Admin Pondok',
             'email' => 'admin@pesantren.com',
-            'password' => Hash::make('password123'), // Password default encryted
+            'password' => Hash::make('password123'),
             'role' => 'admin',
         ]);
 
@@ -33,7 +35,7 @@ class UserSeeder extends Seeder
         Satpam::create([
             'user_id' => $userSatpam->id,
             'nomor_induk_karyawan' => 'NIK-2026-001',
-            'shift' => 'pagi', // Sesuai pilihan enum Anda ('pagi','siang','malam')
+            'shift' => 'pagi',
         ]);
 
         // 3. Membuat Akun Wali Santri beserta Profilnya
@@ -45,10 +47,28 @@ class UserSeeder extends Seeder
             'role' => 'wali_santri',
         ]);
 
-        WaliSantri::create([
+        $waliSantri = WaliSantri::create([
             'user_id' => $userWali->id,
             'alamat' => 'Jl. Merdeka No. 12, Jombang',
             'no_telepon' => '081234567890',
+        ]);
+
+        $santri = Santri::create([
+            'nisn' => '2026000001',
+            'nama' => 'Ahmad Fauzan',
+            'kamar' => 'A-01',
+            'nama_orang_tua' => $userWali->name,
+            'nomor_darurat' => '081234567890',
+            'wali_santri_id' => $waliSantri->id,
+        ]);
+
+        Perizinan::create([
+            'santri_id' => $santri->id,
+            'dibuat_oleh' => User::where('role', 'admin')->value('id'),
+            'alasan' => 'Contoh izin yang telah disetujui',
+            'mulai_at' => now()->subHour(),
+            'kembali_sebelum' => now()->addDay(),
+            'status' => 'disetujui',
         ]);
     }
 }

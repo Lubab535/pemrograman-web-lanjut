@@ -11,10 +11,16 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                <div class="hidden items-center gap-6 sm:-my-px sm:ms-10 sm:flex">
+                    @if (Auth::user()->role === 'admin')
+                        <a class="text-sm text-gray-700 hover:text-emerald-700" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                        <a class="text-sm text-gray-700 hover:text-emerald-700" href="{{ route('admin.santris.index') }}">Data Santri</a>
+                        <a class="text-sm text-gray-700 hover:text-emerald-700" href="{{ route('admin.perizinans.index') }}">Perizinan</a>
+                    @elseif (Auth::user()->role === 'satpam')
+                        <a class="text-sm text-gray-700 hover:text-emerald-700" href="{{ route('satpam.dashboard') }}">Scan Absensi</a>
+                    @else
+                        <a class="text-sm text-gray-700 hover:text-emerald-700" href="{{ route('wali.dashboard') }}">Absensi Anak</a>
+                    @endif
                 </div>
             </div>
 
@@ -67,9 +73,15 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+            @if (Auth::user()->role === 'admin')
+                <x-responsive-nav-link :href="route('admin.dashboard')">Dashboard</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.santris.index')">Data Santri</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.perizinans.index')">Perizinan</x-responsive-nav-link>
+            @elseif (Auth::user()->role === 'satpam')
+                <x-responsive-nav-link :href="route('satpam.dashboard')">Scan Absensi</x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="route('wali.dashboard')">Absensi Anak</x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

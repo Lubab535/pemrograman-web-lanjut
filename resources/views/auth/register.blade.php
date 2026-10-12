@@ -9,6 +9,18 @@
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
+        <div class="mt-4">
+            <x-input-label for="alamat" value="Alamat" />
+            <textarea id="alamat" name="alamat" required class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">{{ old('alamat') }}</textarea>
+            <x-input-error :messages="$errors->get('alamat')" class="mt-2" />
+        </div>
+
+        <div class="mt-4">
+            <x-input-label for="no_telepon" value="Nomor telepon" />
+            <x-text-input id="no_telepon" class="block mt-1 w-full" type="tel" name="no_telepon" :value="old('no_telepon')" required />
+            <x-input-error :messages="$errors->get('no_telepon')" class="mt-2" />
+        </div>
+
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
