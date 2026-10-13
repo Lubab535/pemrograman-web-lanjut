@@ -14,27 +14,21 @@ class DashboardController extends Controller
     public function index(Request $request): RedirectResponse
     {
         return match ($request->user()->role) {
-            'admin' => redirect()->route('admin.dashboard'),
+            'admin' => redirect()->route('admin.users.index'),
+            'pengurus' => redirect()->route('pengurus.dashboard'),
             'satpam' => redirect()->route('satpam.dashboard'),
             'wali_santri' => redirect()->route('wali.dashboard'),
             default => abort(403),
         };
     }
 
-    public function admin(): View
+    public function pengurus(): View
     {
-        return view('admin.admin-dashboard', [
+        return view('pengurus.dashboard', [
             'jumlahSantri' => Santri::count(),
             'izinMenunggu' => Perizinan::where('status', 'menunggu')->count(),
             'sedangKeluar' => Santri::where('status_keberadaan', 'izin_keluar')->count(),
             'absensiTerbaru' => Absensi::with(['santri', 'satpam'])->latest('tercatat_at')->limit(8)->get(),
-        ]);
-    }
-
-    public function satpam(): View
-    {
-        return view('satpam.satpam-dashboard', [
-            'absensiTerbaru' => Absensi::with('santri')->latest('tercatat_at')->limit(12)->get(),
         ]);
     }
 

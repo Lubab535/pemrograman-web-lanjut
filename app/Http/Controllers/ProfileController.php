@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Absensi;
+use App\Models\Perizinan;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,6 +50,22 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+
+        if ($user->role === 'admin' && User::where('role', 'admin')->count() === 1) {
+            return back()->withErrors([
+                'password' => 'Akun admin terakhir tidak dapat dihapus.',
+            ], 'userDeletion');
+        }
+
+        if (
+            $user->perizinansDibuat()->exists()
+            || Perizinan::where('disetujui_oleh', $user->id)->exists()
+            || Absensi::where('satpam_id', $user->id)->exists()
+        ) {
+            return back()->withErrors([
+                'password' => 'Akun tidak dapat dihapus karena masih memiliki riwayat absensi atau perizinan.',
+            ], 'userDeletion');
+        }
 
         Auth::logout();
 

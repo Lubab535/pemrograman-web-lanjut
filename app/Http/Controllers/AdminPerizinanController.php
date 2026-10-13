@@ -12,7 +12,7 @@ class AdminPerizinanController extends Controller
 {
     public function index(): View
     {
-        return view('admin.perizinans.index', [
+        return view('pengurus.perizinans.index', [
             'perizinans' => Perizinan::with(['santri', 'pembuat', 'penyetuju'])->latest()->get(),
             'santris' => Santri::orderBy('nama')->get(),
         ]);
@@ -29,7 +29,7 @@ class AdminPerizinanController extends Controller
 
         $request->user()->perizinansDibuat()->create($data + ['status' => 'menunggu']);
 
-        return redirect()->route('admin.perizinans.index')->with('status', 'Permintaan izin berhasil dicatat.');
+        return redirect()->route('pengurus.perizinans.index')->with('status', 'Permintaan izin berhasil dicatat.');
     }
 
     public function update(Request $request, Perizinan $perizinan): RedirectResponse
@@ -51,6 +51,6 @@ class AdminPerizinanController extends Controller
             'catatan_penolakan' => $data['status'] === 'ditolak' ? ($data['catatan_penolakan'] ?? null) : null,
         ]);
 
-        return redirect()->route('admin.perizinans.index')->with('status', 'Status izin berhasil diperbarui.');
+        return redirect()->route('pengurus.perizinans.index')->with('status', 'Status izin berhasil diperbarui.');
     }
 }

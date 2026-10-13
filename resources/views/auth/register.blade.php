@@ -1,4 +1,5 @@
 <x-guest-layout>
+    <h2 class="mb-6 text-2xl font-semibold text-emerald-950">Daftar akun wali santri</h2>
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
@@ -11,7 +12,7 @@
 
         <div class="mt-4">
             <x-input-label for="alamat" value="Alamat" />
-            <textarea id="alamat" name="alamat" required class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">{{ old('alamat') }}</textarea>
+            <textarea id="alamat" name="alamat" required class="mt-1 block w-full rounded-lg border-emerald-200 shadow-sm focus:border-emerald-600 focus:ring-emerald-500">{{ old('alamat') }}</textarea>
             <x-input-error :messages="$errors->get('alamat')" class="mt-2" />
         </div>
 
@@ -52,7 +53,7 @@
         </div>
 
         <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
+            <a class="rounded-md text-sm font-medium text-blue-700 underline decoration-blue-300 underline-offset-4 hover:text-emerald-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2" href="{{ route('login') }}">
                 {{ __('Already registered?') }}
             </a>
 

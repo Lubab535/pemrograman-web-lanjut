@@ -25,7 +25,7 @@ class AdminSantriController extends Controller
     {
         Santri::create($this->validatedData($request));
 
-        return redirect()->route('admin.santris.index')->with('status', 'Data santri berhasil ditambahkan.');
+        return redirect()->route('pengurus.santris.index')->with('status', 'Data santri berhasil ditambahkan.');
     }
 
     public function edit(Santri $santri): View
@@ -37,25 +37,25 @@ class AdminSantriController extends Controller
     {
         $santri->update($this->validatedData($request, $santri));
 
-        return redirect()->route('admin.santris.index')->with('status', 'Data santri berhasil diperbarui.');
+        return redirect()->route('pengurus.santris.index')->with('status', 'Data santri berhasil diperbarui.');
     }
 
     public function destroy(Santri $santri): RedirectResponse
     {
         if ($santri->absensis()->exists() || $santri->perizinans()->exists()) {
-            return redirect()->route('admin.santris.index')->withErrors([
+            return redirect()->route('pengurus.santris.index')->withErrors([
                 'santri' => 'Data santri tidak dapat dihapus karena sudah memiliki riwayat izin atau absensi.',
             ]);
         }
 
         $santri->delete();
 
-        return redirect()->route('admin.santris.index')->with('status', 'Data santri berhasil dihapus.');
+        return redirect()->route('pengurus.santris.index')->with('status', 'Data santri berhasil dihapus.');
     }
 
     private function listing(?Santri $santriToEdit = null): View
     {
-        return view('admin.santris.index', [
+        return view('pengurus.santris.index', [
             'santris' => Santri::with('waliSantri.user')->latest()->get(),
             'waliSantris' => WaliSantri::with('user')->orderBy('id')->get(),
             'santriToEdit' => $santriToEdit,

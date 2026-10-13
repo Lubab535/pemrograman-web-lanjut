@@ -15,11 +15,11 @@ class PesantrenWorkflowTest extends TestCase
 
     public function test_satpam_records_exit_and_return_against_an_approved_permit(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $pengurus = User::factory()->create(['role' => 'pengurus']);
         $satpam = User::factory()->create(['role' => 'satpam']);
         $santri = Santri::factory()->create();
         $perizinan = Perizinan::factory()->for($santri)->create([
-            'dibuat_oleh' => $admin->id,
+            'dibuat_oleh' => $pengurus->id,
             'status' => 'disetujui',
             'mulai_at' => now()->subHour(),
             'kembali_sebelum' => now()->addHours(4),
@@ -53,40 +53,40 @@ class PesantrenWorkflowTest extends TestCase
         $this->assertDatabaseCount('absensis', 0);
     }
 
-    public function test_admin_creates_and_approves_a_permit(): void
+    public function test_pengurus_creates_and_approves_a_permit(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $pengurus = User::factory()->create(['role' => 'pengurus']);
         $santri = Santri::factory()->create();
         $mulaiAt = now()->addHour()->format('Y-m-d\TH:i');
         $kembaliSebelum = now()->addHours(5)->format('Y-m-d\TH:i');
 
-        $this->actingAs($admin)->post(route('admin.perizinans.store'), [
+        $this->actingAs($pengurus)->post(route('pengurus.perizinans.store'), [
             'santri_id' => $santri->id,
             'alasan' => 'Keperluan keluarga',
             'mulai_at' => $mulaiAt,
             'kembali_sebelum' => $kembaliSebelum,
-        ])->assertRedirect(route('admin.perizinans.index'));
+        ])->assertRedirect(route('pengurus.perizinans.index'));
 
         $perizinan = Perizinan::firstOrFail();
         $this->assertSame('menunggu', $perizinan->status);
-        $this->assertSame($admin->id, $perizinan->dibuat_oleh);
+        $this->assertSame($pengurus->id, $perizinan->dibuat_oleh);
 
-        $this->actingAs($admin)->patch(route('admin.perizinans.update', $perizinan), [
+        $this->actingAs($pengurus)->patch(route('pengurus.perizinans.update', $perizinan), [
             'status' => 'disetujui',
-        ])->assertRedirect(route('admin.perizinans.index'));
+        ])->assertRedirect(route('pengurus.perizinans.index'));
 
         $this->assertDatabaseHas('perizinans', [
             'id' => $perizinan->id,
             'status' => 'disetujui',
-            'disetujui_oleh' => $admin->id,
+            'disetujui_oleh' => $pengurus->id,
         ]);
     }
 
-    public function test_satpam_cannot_open_admin_santri_management(): void
+    public function test_satpam_cannot_open_pengurus_santri_management(): void
     {
         $satpam = User::factory()->create(['role' => 'satpam']);
 
-        $this->actingAs($satpam)->get(route('admin.santris.index'))->assertForbidden();
+        $this->actingAs($satpam)->get(route('pengurus.santris.index'))->assertForbidden();
     }
 
     public function test_guardian_only_sees_santri_linked_to_their_account(): void
@@ -112,25 +112,29 @@ class PesantrenWorkflowTest extends TestCase
     public function test_role_dashboards_render_for_their_actors(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
+        $pengurus = User::factory()->create(['role' => 'pengurus']);
         $satpam = User::factory()->create(['role' => 'satpam']);
 
-        $this->actingAs($admin)->get(route('admin.dashboard'))->assertOk()->assertSeeText('Dashboard Admin Pesantren');
-        $this->actingAs($admin)->get(route('admin.santris.index'))->assertOk()->assertSeeText('Data Santri dan QR KTS');
-        $this->actingAs($admin)->get(route('admin.perizinans.index'))->assertOk()->assertSeeText('Perizinan Santri');
+        $this->actingAs($admin)->get(route('admin.users.index'))->assertOk()->assertSeeText('Kelola Pengguna');
+        $this->actingAs($admin)->get(route('pengurus.santris.index'))->assertForbidden();
+        $this->actingAs($admin)->get(route('pengurus.perizinans.index'))->assertForbidden();
+        $this->actingAs($pengurus)->get(route('pengurus.dashboard'))->assertOk()->assertSeeText('Dashboard Pengurus Pesantren');
+        $this->actingAs($pengurus)->get(route('pengurus.santris.index'))->assertOk()->assertSeeText('Data Santri dan QR KTS');
+        $this->actingAs($pengurus)->get(route('pengurus.perizinans.index'))->assertOk()->assertSeeText('Perizinan Santri');
         $this->actingAs($satpam)->get(route('satpam.dashboard'))->assertOk()->assertSeeText('Pindai KTS');
     }
 
-    public function test_admin_creates_a_santri_with_a_generated_qr_token(): void
+    public function test_pengurus_creates_a_santri_with_a_generated_qr_token(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $pengurus = User::factory()->create(['role' => 'pengurus']);
 
-        $this->actingAs($admin)->post(route('admin.santris.store'), [
+        $this->actingAs($pengurus)->post(route('pengurus.santris.store'), [
             'nisn' => '1234567890',
             'nama' => 'Santri Baru',
             'kamar' => 'B-02',
             'nama_orang_tua' => 'Orang Tua',
             'nomor_darurat' => '081234567890',
-        ])->assertRedirect(route('admin.santris.index'));
+        ])->assertRedirect(route('pengurus.santris.index'));
 
         $santri = Santri::where('nisn', '1234567890')->firstOrFail();
         $this->assertNotEmpty($santri->qr_token);

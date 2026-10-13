@@ -96,4 +96,17 @@ class ProfileTest extends TestCase
 
         $this->assertNotNull($user->fresh());
     }
+
+    public function test_last_admin_cannot_delete_their_own_account(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin)
+            ->from('/profile')
+            ->delete('/profile', ['password' => 'password'])
+            ->assertSessionHasErrorsIn('userDeletion', 'password')
+            ->assertRedirect('/profile');
+
+        $this->assertModelExists($admin);
+    }
 }

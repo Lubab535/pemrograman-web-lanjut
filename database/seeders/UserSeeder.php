@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Membuat Akun Admin
+        // Membuat akun admin untuk pengelolaan pengguna.
         User::create([
             'username' => 'admin_pondok',
             'name' => 'Admin Pondok',
@@ -23,7 +23,15 @@ class UserSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        // 2. Membuat Akun Satpam beserta Profilnya
+        $userPengurus = User::create([
+            'username' => 'pengurus_pondok',
+            'name' => 'Pengurus Pondok',
+            'email' => 'pengurus@pesantren.com',
+            'password' => Hash::make('password123'),
+            'role' => 'pengurus',
+        ]);
+
+        // Membuat akun satpam beserta profilnya.
         $userSatpam = User::create([
             'username' => 'satpam_budi',
             'name' => 'Budi Satpam',
@@ -38,7 +46,7 @@ class UserSeeder extends Seeder
             'shift' => 'pagi',
         ]);
 
-        // 3. Membuat Akun Wali Santri beserta Profilnya
+        // Membuat akun wali santri beserta profilnya.
         $userWali = User::create([
             'username' => 'wali_ahmad',
             'name' => 'Ahmad Wali',
@@ -64,7 +72,7 @@ class UserSeeder extends Seeder
 
         Perizinan::create([
             'santri_id' => $santri->id,
-            'dibuat_oleh' => User::where('role', 'admin')->value('id'),
+            'dibuat_oleh' => $userPengurus->id,
             'alasan' => 'Contoh izin yang telah disetujui',
             'mulai_at' => now()->subHour(),
             'kembali_sebelum' => now()->addDay(),

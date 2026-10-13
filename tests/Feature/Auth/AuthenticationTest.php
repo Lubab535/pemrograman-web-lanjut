@@ -30,6 +30,30 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('wali.dashboard', absolute: false));
     }
 
+    public function test_admins_are_redirected_to_user_management_after_login(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->post('/login', [
+            'email' => $admin->email,
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect(route('admin.users.index', absolute: false));
+    }
+
+    public function test_pengurus_are_redirected_to_their_dashboard_after_login(): void
+    {
+        $pengurus = User::factory()->create(['role' => 'pengurus']);
+
+        $response = $this->post('/login', [
+            'email' => $pengurus->email,
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect(route('pengurus.dashboard', absolute: false));
+    }
+
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
         $user = User::factory()->create();

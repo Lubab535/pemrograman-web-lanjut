@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminPerizinanController;
 use App\Http\Controllers\AdminSantriController;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SatpamAbsensiController;
@@ -16,7 +17,15 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/admin-dashboard', [DashboardController::class, 'admin'])->name('dashboard');
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+});
+
+Route::middleware(['auth', 'role:pengurus'])->prefix('pengurus')->name('pengurus.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'pengurus'])->name('dashboard');
     Route::resource('santris', AdminSantriController::class)->except(['show']);
     Route::get('/perizinans', [AdminPerizinanController::class, 'index'])->name('perizinans.index');
     Route::post('/perizinans', [AdminPerizinanController::class, 'store'])->name('perizinans.store');
